@@ -22,6 +22,7 @@
 """
 from PyQt4.QtCore import QSettings, QTranslator, qVersion, QCoreApplication
 from PyQt4.QtGui import QAction, QIcon
+from PyQt4.QtGui import QFileDialog                  #Toegevoegd!   
 # Initialize Qt resources from file resources.py
 import resources
 # Import the code for the dialog
@@ -67,6 +68,11 @@ class CBSmapper:
         # TODO: We are going to let the user set this up in a future iteration
         self.toolbar = self.iface.addToolBar(u'CBSmapper')
         self.toolbar.setObjectName(u'CBSmapper')
+        
+        
+        self.dlg.lineEdit.clear()                                       #Toegevoegd
+        self.dlg.pushButton_exportSelect.clicked.connect(self.select_output_file)    #Toegevoegd       
+        
 
     # noinspection PyMethodMayBeStatic
     def tr(self, message):
@@ -179,8 +185,21 @@ class CBSmapper:
         del self.toolbar
 
 
+    def select_output_file(self):                                                           #Toegevoegd
+        filename = QFileDialog.getSaveFileName(self.dlg, "Select output file ","", '*.txt') #Toegevoegd
+        self.dlg.lineEdit.setText(filename)                                                 #Toegevoegd
+
+
     def run(self):
         """Run method that performs all the real work"""
+        layers = self.iface.legendInterface().layers()  #Toegevoegd!
+        layer_list = []                                 #Toegevoegd!
+        for layer in layers:                            #Toegevoegd!
+            layer_list.append(layer.name())             #Toegevoegd!
+        self.dlg.comboBox_addLayer.addItems(layer_list) #Toegevoegd!
+        
+        self.dlg.comboBox_selectAtt.addItems(layer_list) #Toegevoegd!
+        
         # show the dialog
         self.dlg.show()
         # Run the dialog event loop
@@ -189,4 +208,16 @@ class CBSmapper:
         if result:
             # Do something useful here - delete the line containing pass and
             # substitute with your code.
-            pass
+            filename = self.dlg.lineEdit.text()                             #Toegevoegd!
+            output_file = open(filename, 'w')                               #Toegevoegd!
+            
+            selectedLayerIndex = self.dlg.comboBox_addLayer.currentIndex()           #Toegevoegd!
+            selectedLayer = layers[selectedLayerIndex]                      #Toegevoegd!
+            fields = selectedLayer.pendingFields()                          #Toegevoegd!
+            fieldnames = [field.name() for field in fields]                 #Toegevoegd!
+            
+            for f in selectedLayer.getFeatures():                           #Toegevoegd!
+                line = ','.join(unicode(f[x]) for x in fieldnames) + '\n'   #Toegevoegd!
+                unicode_line = line.encode('utf-8')                         #Toegevoegd!
+                output_file.write(unicode_line)                             #Toegevoegd!
+            output_file.close()                                             #Toegevoegd!
