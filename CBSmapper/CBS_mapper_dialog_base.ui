@@ -70,12 +70,12 @@
     <rect>
      <x>140</x>
      <y>120</y>
-     <width>111</width>
+     <width>131</width>
      <height>17</height>
     </rect>
    </property>
    <property name="text">
-    <string>Select attribute:</string>
+    <string>Select field name:</string>
    </property>
   </widget>
   <widget class="QComboBox" name="comboBox_selectAtt">
@@ -101,7 +101,7 @@
     <string>Operation:</string>
    </property>
   </widget>
-  <widget class="QTextEdit" name="textEdit">
+  <widget class="QTextEdit" name="query_line">
    <property name="geometry">
     <rect>
      <x>20</x>
@@ -137,7 +137,7 @@
     <string>Export selection to ...</string>
    </property>
   </widget>
-  <widget class="QLineEdit" name="lineEdit">
+  <widget class="QLineEdit" name="export_line">
    <property name="geometry">
     <rect>
      <x>20</x>

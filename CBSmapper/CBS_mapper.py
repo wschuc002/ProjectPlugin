@@ -29,6 +29,9 @@ import resources
 from CBS_mapper_dialog import CBSmapperDialog
 import os.path
 
+##
+#from selection_query import *
+from qgis.core import *
 
 class CBSmapper:
     """QGIS Plugin Implementation."""
@@ -70,9 +73,12 @@ class CBSmapper:
         self.toolbar.setObjectName(u'CBSmapper')
         
         
-        self.dlg.lineEdit.clear()                                       #Toegevoegd
+        self.dlg.export_line.clear()                                       #Toegevoegd
         self.dlg.pushButton_exportSelect.clicked.connect(self.select_output_file)    #Toegevoegd       
         
+        #self.dlg.pushButton_showSelect.clicked.connect(self.get_fieldname)    #Toegevoegd
+        self.dlg.pushButton_showSelect.clicked.connect(self.selectfeatures)    #Toegevoegd
+
 
     # noinspection PyMethodMayBeStatic
     def tr(self, message):
@@ -187,8 +193,52 @@ class CBSmapper:
 
     def select_output_file(self):                                                           #Toegevoegd
         filename = QFileDialog.getSaveFileName(self.dlg, "Select output file ","", '*.txt') #Toegevoegd
-        self.dlg.lineEdit.setText(filename)                                                 #Toegevoegd
+        self.dlg.export_line.setText(filename)                                                 #Toegevoegd
 
+#    def get_fieldname(self):
+#        attribute = self.dlg.comboBox_selectAtt
+#        fieldname = str(attribute.currentText())
+#        return fieldname        
+#        #print fieldname
+#
+#    def execute_query(self):
+#        query_line = self.dlg.query_line
+#        query = str(query_line.toPlainText())
+#        return query        
+#        #print query
+
+    def selectquery(self, query):
+           
+        layer = self.iface.activeLayer()
+        query_str = str(query)
+        print query_str        
+        #Get gemeenten without null value in name:
+        expr = QgsExpression(query_str)
+        selected = layer.getFeatures( QgsFeatureRequest( expr ) )
+    
+        #Build a list of feature Ids from the result
+        #ids = [i.id() for i in selected]
+        ids = []
+        for i in selected:
+            ids.append(i.id())
+    
+        #Select features with the ids
+        layer.setSelectedFeatures( ids )
+
+
+    def selectfeatures(self):
+        
+        # get fieldname
+        attribute = self.dlg.comboBox_selectAtt
+        fieldname = str(attribute.currentText())
+        
+        # get query
+        query_line = self.dlg.query_line
+        query = str(query_line.toPlainText())
+        
+        combined_query = "%s %s" % (fieldname, query)
+        #print combined_query
+        self.selectquery(combined_query)
 
     def run(self):
         """Run method that performs all the real work"""
@@ -198,17 +248,24 @@ class CBSmapper:
             layer_list.append(layer.name())             #Toegevoegd!
         self.dlg.comboBox_addLayer.addItems(layer_list) #Toegevoegd!
         
-        self.dlg.comboBox_selectAtt.addItems(layer_list) #Toegevoegd!
         
+        activelayer = self.iface.activeLayer()  
+        fields = activelayer.pendingFields()   
+        field_names = [field.name() for field in fields]        
+        attri = self.dlg.comboBox_selectAtt.addItems(field_names) #Toegevoegd!        
+        #print self.dlg.comboBox_selectAtt.get()
+        #return(comboBox_selectAtt.addItems)
+        
+
         # show the dialog
         self.dlg.show()
         # Run the dialog event loop
         result = self.dlg.exec_()
         # See if OK was pressed
-        if result:
+        if result:               
             # Do something useful here - delete the line containing pass and
             # substitute with your code.
-            filename = self.dlg.lineEdit.text()                             #Toegevoegd!
+            filename = self.dlg.export_line.text()                             #Toegevoegd!
             output_file = open(filename, 'w')                               #Toegevoegd!
             
             selectedLayerIndex = self.dlg.comboBox_addLayer.currentIndex()           #Toegevoegd!
