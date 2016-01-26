@@ -1,21 +1,23 @@
 # -*- coding: utf-8 -*-
 
-
-## select gemeentes with delf in the name
-#exp = QgsExpression('gemeentenaam ILIKE \'%Delf%\'')
-#request = QgsFeatureRequest(exp)
-
-#for feature in layer.getFeatures(request):
-#    print feature['gemeentenaam']
-
-
 layer = iface.activeLayer()
 
-exp = QgsExpression('aantal_inwoners > 200000')
-request = QgsFeatureRequest(exp)
 
-for feature in layer.getFeatures(request):
-    inwoners = feature['aantal_inwoners']
-    #if inwoners > 200000:
-    print feature['gemeentenaam']
+#Get gemeenten without null value in name:
+expr = QgsExpression('aantal_inwoners > 200000')
+selected = layer.getFeatures( QgsFeatureRequest( expr ) )
+
+#Build a list of feature Ids from the result
+#ids = [i.id() for i in selected]
+ids = []
+for i in selected:
+    ids.append(i.id())
+
+#Select features with the ids
+layer.setSelectedFeatures( ids )
+
+# export to geojson
+name = "inwoners"
+JSONpath = "/home/user/git/ProjectPlugin/data/%s.geojson" % name
+QgsVectorFileWriter.writeAsVectorFormat(layer, JSONpath, "utf-8", None, "GeoJSON", onlySelected=True)
 
