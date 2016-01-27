@@ -20,18 +20,15 @@
  *                                                                         *
  ***************************************************************************/
 """
+#Importing the packages that are used
 from PyQt4.QtCore import QSettings, QTranslator, qVersion, QCoreApplication
-from PyQt4.QtGui import QAction, QIcon
-from PyQt4.QtGui import QFileDialog                  #Toegevoegd!   
+from PyQt4.QtGui import QAction, QIcon, QFileDialog
+from CBS_mapper_dialog import CBSmapperDialog
+from qgis.core import *
+import os.path
 # Initialize Qt resources from file resources.py
 import resources
 # Import the code for the dialog
-from CBS_mapper_dialog import CBSmapperDialog
-import os.path
-
-##
-#from selection_query import *
-from qgis.core import *
 
 class CBSmapper:
     """QGIS Plugin Implementation."""
@@ -72,14 +69,16 @@ class CBSmapper:
         self.toolbar = self.iface.addToolBar(u'CBSmapper')
         self.toolbar.setObjectName(u'CBSmapper')
         
+        #clearing the export line
+        self.dlg.export_line.clear() 
+        #Connecting several push buttons with functions    
+        self.dlg.pushButton_showSelect.clicked.connect(self.selectfeatures)
+        self.dlg.pushButton_browseGjsonSelect.clicked.connect(self.select_output_file_gjson) 
+        self.dlg.pushButton_exportGjsonSelect.clicked.connect(self.write_gjson)
+        self.dlg.pushButton_cancel.clicked.connect(self.cancel_plugin)
+        self.dlg.pushButton_addWFS_gemeenten.clicked.connect(self.add_WFS_gemeenten)
+        self.dlg.pushButton_addWFS_buurten.clicked.connect(self.add_WFS_buurten)
         
-        self.dlg.export_line.clear()                                       #Toegevoegd
-        self.dlg.pushButton_exportSelect.clicked.connect(self.select_output_file)    #Toegevoegd       
-        
-        #self.dlg.pushButton_showSelect.clicked.connect(self.get_fieldname)    #Toegevoegd
-        self.dlg.pushButton_showSelect.clicked.connect(self.selectfeatures)    #Toegevoegd
-
-
     # noinspection PyMethodMayBeStatic
     def tr(self, message):
         """Get the translation for a string using Qt translation API.
@@ -179,7 +178,6 @@ class CBSmapper:
             callback=self.run,
             parent=self.iface.mainWindow())
 
-
     def unload(self):
         """Removes the plugin menu item and icon from QGIS GUI."""
         for action in self.actions:
@@ -190,44 +188,117 @@ class CBSmapper:
         # remove the toolbar
         del self.toolbar
 
+    def add_WFS_gemeenten(self):
+        """Add gemeente WFS layer to QGIS map canvas."""
+         
+        # Load the wfs
+        url = "http://geodata.nationaalgeoregister.nl/wijkenbuurten2014/wfs?SERVICE=WFS&VERSION=1.0.0&REQUEST=GetFeature&TYPENAME=wijkenenbuurten2014:gemeenten2014&SRSNAME=EPSG:28992" 
+        self.iface.addVectorLayer(url, "gemeenten2014", "WFS")
+        
+        # select gemeenten layer
+        layer = self.iface.activeLayer()
+        
+#        #Get gemeenten without null value in name:
+#        expr = QgsExpression('gemeentenaam IS NOT NULL')
+#        gemeenten_notnull = layer.getFeatures( QgsFeatureRequest( expr ) )
+#        
+#        #Build a list of feature Ids from the result
+#        ids = [i.id() for i in gemeenten_notnull]
+#        
+#        #Select features with the ids
+#        layer.setSelectedFeatures( ids )
+#        
+#        # write geojson
+#        JSONpath = "/home/user/git/ProjectPlugin/data/gemeenten_2014.geojson"
+#        QgsVectorFileWriter.writeAsVectorFormat(layer, JSONpath, "utf-8", None, "GeoJSON", onlySelected=True)
+#        
+#        # delete gemeenten wfs from qgis
+#        QgsMapLayerRegistry.instance().removeMapLayer(layer.id())
+#        
+#        # add gemeenten geojson to qgis
+#        self.iface.addVectorLayer(JSONpath, "gemeenten_2014", "ogr")
+        
+        # Get layers that are loaded in QGIS.        
+        layers = self.iface.legendInterface().layers()  
+        layer_list = []                                 
+        for layer in layers:                            
+            layer_list.append(layer.name())             
+        # Add the layer names to the combobox
+        self.dlg.comboBox_addLayer.addItems(layer_list) 
+        
+        # Get the active layer in QGIS
+        activelayer = self.iface.activeLayer()  
+        # Get the fieldnames of the layer
+        fields = activelayer.pendingFields()
+        field_names = [field.name() for field in fields]        
+        # Add the field names to the combobox
+        attri = self.dlg.comboBox_selectAtt.addItems(field_names)         
 
-    def select_output_file(self):                                                           #Toegevoegd
-        filename = QFileDialog.getSaveFileName(self.dlg, "Select output file ","", '*.txt') #Toegevoegd
-        self.dlg.export_line.setText(filename)                                                 #Toegevoegd
+    def add_WFS_buurten(self):
+        """Add gemeente WFS layer to QGIS map canvas."""
+         
+        # Load the wfs
+        #url = "https://geodata.nationaalgeoregister.nl/wijkenbuurten2014/wfs?version=1.0.0&request=getcapabilitieswijkenbuurten2014:cbs_buurten_2014" 
+        url = "https://geodata.nationaalgeoregister.nl/wijkenbuurten2014/wfs?SERVICE=WFS&VERSION=1.0.0&REQUEST=GetFeature&TYPENAME=wijkenbuurten2014:cbs_buurten_2014&SRSNAME=EPSG:28992&BBOX=0,300000,300000,600000"       
+        
+        self.iface.addVectorLayer(url, "buurten2014", "WFS")
+        
+        # select buurten layer
+        layer = self.iface.activeLayer()
+   
+        # Get layers that are loaded in QGIS.        
+        layers = self.iface.legendInterface().layers()  
+        layer_list = []                                 
+        for layer in layers:                            
+            layer_list.append(layer.name())             
+        # Add the layer names to the combobox
+        self.dlg.comboBox_addLayer.addItems(layer_list) 
+        
+        # Get the active layer in QGIS
+        activelayer = self.iface.activeLayer()  
+        # Get the fieldnames of the layer
+        fields = activelayer.pendingFields()
+        field_names = [field.name() for field in fields]        
+        # Add the field names to the combobox
+        attri = self.dlg.comboBox_selectAtt.addItems(field_names)         
 
-#    def get_fieldname(self):
-#        attribute = self.dlg.comboBox_selectAtt
-#        fieldname = str(attribute.currentText())
-#        return fieldname        
-#        #print fieldname
-#
-#    def execute_query(self):
-#        query_line = self.dlg.query_line
-#        query = str(query_line.toPlainText())
-#        return query        
-#        #print query
+
+    def select_output_file_txt(self):
+        """Selects the output text file from QGIS GUI."""
+        filename = QFileDialog.getSaveFileName(self.dlg, "Select output file ","", '*.txt')
+        self.dlg.export_line.setText(filename)
+
+    def select_output_file_gjson(self):
+        """Selects the output GeoJSON file from QGIS GUI."""
+        filename = QFileDialog.getSaveFileName(self.dlg, "Select output file ","", '*.gjson')
+        self.dlg.export_line.setText(filename)
+
+    def write_gjson(self):
+        """Writes the output GeoJSON file from QGIS GUI."""
+        # getting the selected layer
+        layer = self.iface.activeLayer()
+        # getting the path from the path line
+        JSONpath = self.dlg.export_line.text()
+        # write layer selection to geojson with location of choice (export line)
+        QgsVectorFileWriter.writeAsVectorFormat(layer, JSONpath, "utf-8", None, "GeoJSON", onlySelected=True)
 
     def selectquery(self, query):
-           
+        """Selecting the query."""               
         layer = self.iface.activeLayer()
         query_str = str(query)
         print query_str        
         #Get gemeenten without null value in name:
         expr = QgsExpression(query_str)
-        selected = layer.getFeatures( QgsFeatureRequest( expr ) )
-    
+        selected = layer.getFeatures(QgsFeatureRequest(expr))
         #Build a list of feature Ids from the result
-        #ids = [i.id() for i in selected]
         ids = []
         for i in selected:
             ids.append(i.id())
-    
         #Select features with the ids
         layer.setSelectedFeatures( ids )
 
-
     def selectfeatures(self):
-        
+        """Selecting the features."""   
         # get fieldname
         attribute = self.dlg.comboBox_selectAtt
         fieldname = str(attribute.currentText())
@@ -239,42 +310,30 @@ class CBSmapper:
         combined_query = "%s %s" % (fieldname, query)
         #print combined_query
         self.selectquery(combined_query)
+        
+    def cancel_plugin(self):
+        """Closes the QGIS plugin"""
+        
+        
+        
 
     def run(self):
         """Run method that performs all the real work"""
-        layers = self.iface.legendInterface().layers()  #Toegevoegd!
-        layer_list = []                                 #Toegevoegd!
-        for layer in layers:                            #Toegevoegd!
-            layer_list.append(layer.name())             #Toegevoegd!
-        self.dlg.comboBox_addLayer.addItems(layer_list) #Toegevoegd!
-        
-        
-        activelayer = self.iface.activeLayer()  
-        fields = activelayer.pendingFields()   
-        field_names = [field.name() for field in fields]        
-        attri = self.dlg.comboBox_selectAtt.addItems(field_names) #Toegevoegd!        
-        #print self.dlg.comboBox_selectAtt.get()
-        #return(comboBox_selectAtt.addItems)
         
 
         # show the dialog
         self.dlg.show()
         # Run the dialog event loop
-        result = self.dlg.exec_()
+        #result = self.dlg.exec_()
         # See if OK was pressed
-        if result:               
+#        if result:               
             # Do something useful here - delete the line containing pass and
             # substitute with your code.
-            filename = self.dlg.export_line.text()                             #Toegevoegd!
-            output_file = open(filename, 'w')                               #Toegevoegd!
             
-            selectedLayerIndex = self.dlg.comboBox_addLayer.currentIndex()           #Toegevoegd!
-            selectedLayer = layers[selectedLayerIndex]                      #Toegevoegd!
-            fields = selectedLayer.pendingFields()                          #Toegevoegd!
-            fieldnames = [field.name() for field in fields]                 #Toegevoegd!
-            
-            for f in selectedLayer.getFeatures():                           #Toegevoegd!
-                line = ','.join(unicode(f[x]) for x in fieldnames) + '\n'   #Toegevoegd!
-                unicode_line = line.encode('utf-8')                         #Toegevoegd!
-                output_file.write(unicode_line)                             #Toegevoegd!
-            output_file.close()                                             #Toegevoegd!
+                                      
+#            selectedLayerIndex = self.dlg.comboBox_addLayer.currentIndex()           
+#            selectedLayer = layers[selectedLayerIndex]                      
+#            fields = selectedLayer.pendingFields()                          
+#            fieldnames = [field.name() for field in fields]                 
+#            
+
