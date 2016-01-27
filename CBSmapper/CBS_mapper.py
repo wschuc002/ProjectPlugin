@@ -71,13 +71,15 @@ class CBSmapper:
         
         #clearing the export line
         self.dlg.export_line.clear() 
-        #Connecting several push buttons with functions    
+        #Connecting several push buttons with functions
+        self.dlg.pushButton_addWFS_gemeenten.clicked.connect(self.add_WFS_gemeenten)
+        self.dlg.pushButton_addWFS_buurten.clicked.connect(self.add_WFS_buurten)
+
+        self.dlg.pushButton_refresh.clicked.connect(self.refresh_layers)        
+        
         self.dlg.pushButton_showSelect.clicked.connect(self.selectfeatures)
         self.dlg.pushButton_browseGjsonSelect.clicked.connect(self.select_output_file_gjson) 
         self.dlg.pushButton_exportGjsonSelect.clicked.connect(self.write_gjson)
-        self.dlg.pushButton_cancel.clicked.connect(self.cancel_plugin)
-        self.dlg.pushButton_addWFS_gemeenten.clicked.connect(self.add_WFS_gemeenten)
-        self.dlg.pushButton_addWFS_buurten.clicked.connect(self.add_WFS_buurten)
         
     # noinspection PyMethodMayBeStatic
     def tr(self, message):
@@ -219,20 +221,9 @@ class CBSmapper:
 #        self.iface.addVectorLayer(JSONpath, "gemeenten_2014", "ogr")
         
         # Get layers that are loaded in QGIS.        
-        layers = self.iface.legendInterface().layers()  
-        layer_list = []                                 
-        for layer in layers:                            
-            layer_list.append(layer.name())             
-        # Add the layer names to the combobox
-        self.dlg.comboBox_addLayer.addItems(layer_list) 
         
-        # Get the active layer in QGIS
-        activelayer = self.iface.activeLayer()  
-        # Get the fieldnames of the layer
-        fields = activelayer.pendingFields()
-        field_names = [field.name() for field in fields]        
-        # Add the field names to the combobox
-        attri = self.dlg.comboBox_selectAtt.addItems(field_names)         
+        
+        #self.refresh_layers()
 
     def add_WFS_buurten(self):
         """Add gemeente WFS layer to QGIS map canvas."""
@@ -243,30 +234,7 @@ class CBSmapper:
         
         self.iface.addVectorLayer(url, "buurten2014", "WFS")
         
-        # select buurten layer
-        layer = self.iface.activeLayer()
-   
-        # Get layers that are loaded in QGIS.        
-        layers = self.iface.legendInterface().layers()  
-        layer_list = []                                 
-        for layer in layers:                            
-            layer_list.append(layer.name())             
-        # Add the layer names to the combobox
-        self.dlg.comboBox_addLayer.addItems(layer_list) 
-        
-        # Get the active layer in QGIS
-        activelayer = self.iface.activeLayer()  
-        # Get the fieldnames of the layer
-        fields = activelayer.pendingFields()
-        field_names = [field.name() for field in fields]        
-        # Add the field names to the combobox
-        attri = self.dlg.comboBox_selectAtt.addItems(field_names)         
-
-
-    def select_output_file_txt(self):
-        """Selects the output text file from QGIS GUI."""
-        filename = QFileDialog.getSaveFileName(self.dlg, "Select output file ","", '*.txt')
-        self.dlg.export_line.setText(filename)
+        #self.refresh_layers()
 
     def select_output_file_gjson(self):
         """Selects the output GeoJSON file from QGIS GUI."""
@@ -311,29 +279,51 @@ class CBSmapper:
         #print combined_query
         self.selectquery(combined_query)
         
-    def cancel_plugin(self):
-        """Closes the QGIS plugin"""
+    def refresh_layers(self):
+        # select layer
+        layer = self.iface.activeLayer()
+   
+        # Get layers that are loaded in QGIS.        
+        layers = self.iface.legendInterface().layers()  
+        layer_list = []                                 
+        for layer in layers:                            
+            layer_list.append(layer.name())             
+        # Add the layer names to the combobox
+        self.dlg.comboBox_addLayer.addItems(layer_list) 
         
-        
-        
+        # Get the active layer in QGIS
+        activelayer = self.iface.activeLayer()  
+        # Get the fieldnames of the layer
+        fields = activelayer.pendingFields()
+        field_names = [field.name() for field in fields]        
+        # Add the field names to the combobox
+        attri = self.dlg.comboBox_selectAtt.addItems(field_names)       
 
     def run(self):
         """Run method that performs all the real work"""
         
-
+        
         # show the dialog
         self.dlg.show()
         # Run the dialog event loop
-        #result = self.dlg.exec_()
+        result = self.dlg.exec_()
         # See if OK was pressed
-#        if result:               
+        if result:
             # Do something useful here - delete the line containing pass and
             # substitute with your code.
-            
-                                      
+            pass
+        
+        
+        # show the dialog
+        #self.dlg.show()
+#        # Run the dialog event loop
+#        result = self.dlg.exec_()
+#        #See if OK was pressed
+#        if result:               
+#            Do something useful here - delete the line containing pass and
+#            substitute with your code.
+#                         
 #            selectedLayerIndex = self.dlg.comboBox_addLayer.currentIndex()           
 #            selectedLayer = layers[selectedLayerIndex]                      
 #            fields = selectedLayer.pendingFields()                          
-#            fieldnames = [field.name() for field in fields]                 
-#            
-
+#            fieldnames = [field.name() for field in fields]

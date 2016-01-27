@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>392</width>
-    <height>507</height>
+    <height>422</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -19,56 +19,77 @@
   <property name="windowTitle">
    <string>CBS Mapper</string>
   </property>
+  <property name="toolTip">
+   <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Adds the gemeenten (municipalities) from the Dutch SDI: Nationaal Georegister.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+  </property>
+  <property name="whatsThis">
+   <string>fgdfgfdgf</string>
+  </property>
   <widget class="QLabel" name="label">
    <property name="geometry">
     <rect>
-     <x>160</x>
-     <y>80</y>
-     <width>91</width>
-     <height>17</height>
+     <x>20</x>
+     <y>90</y>
+     <width>341</width>
+     <height>20</height>
     </rect>
    </property>
    <property name="text">
     <string>Select a layer:</string>
    </property>
+   <property name="alignment">
+    <set>Qt::AlignCenter</set>
+   </property>
   </widget>
   <widget class="QLabel" name="label_2">
    <property name="geometry">
     <rect>
-     <x>100</x>
-     <y>480</y>
-     <width>211</width>
-     <height>17</height>
+     <x>20</x>
+     <y>400</y>
+     <width>351</width>
+     <height>20</height>
     </rect>
+   </property>
+   <property name="toolTip">
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;William Schuch &amp;amp; Rik van Berkum&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
    </property>
    <property name="text">
     <string>Geodetic Engineers of Utrecht</string>
+   </property>
+   <property name="alignment">
+    <set>Qt::AlignCenter</set>
    </property>
   </widget>
   <widget class="QComboBox" name="comboBox_addLayer">
    <property name="geometry">
     <rect>
      <x>20</x>
-     <y>100</y>
-     <width>351</width>
+     <y>110</y>
+     <width>311</width>
      <height>27</height>
     </rect>
    </property>
    <property name="cursor">
     <cursorShape>OpenHandCursor</cursorShape>
    </property>
+   <property name="toolTip">
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Select your layer here. If there are no layers available, press the 'resfresh' button of add a CBS layer.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+   </property>
   </widget>
   <widget class="QLabel" name="label_3">
    <property name="geometry">
     <rect>
-     <x>140</x>
-     <y>140</y>
-     <width>131</width>
-     <height>17</height>
+     <x>20</x>
+     <y>150</y>
+     <width>351</width>
+     <height>20</height>
     </rect>
    </property>
    <property name="text">
     <string>Select field name:</string>
+   </property>
+   <property name="alignment">
+    <set>Qt::AlignCenter</set>
    </property>
   </widget>
   <widget class="QComboBox" name="comboBox_selectAtt">
@@ -83,41 +104,53 @@
    <property name="cursor">
     <cursorShape>OpenHandCursor</cursorShape>
    </property>
+   <property name="toolTip">
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Select the field name you are interested in. This attribute will be applicable to the operation.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+   </property>
   </widget>
   <widget class="QLabel" name="label_4">
    <property name="geometry">
     <rect>
-     <x>160</x>
-     <y>220</y>
-     <width>81</width>
-     <height>17</height>
+     <x>20</x>
+     <y>200</y>
+     <width>351</width>
+     <height>20</height>
     </rect>
    </property>
    <property name="text">
     <string>Operation:</string>
+   </property>
+   <property name="alignment">
+    <set>Qt::AlignCenter</set>
    </property>
   </widget>
   <widget class="QTextEdit" name="query_line">
    <property name="geometry">
     <rect>
      <x>20</x>
-     <y>250</y>
+     <y>220</y>
      <width>351</width>
      <height>31</height>
     </rect>
+   </property>
+   <property name="toolTip">
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This operations will be applicable to the selected field name.&lt;/p&gt;&lt;p&gt;Example: &amp;gt; 100000&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
    </property>
   </widget>
   <widget class="QPushButton" name="pushButton_showSelect">
    <property name="geometry">
     <rect>
      <x>20</x>
-     <y>290</y>
+     <y>260</y>
      <width>351</width>
      <height>41</height>
     </rect>
    </property>
    <property name="cursor">
     <cursorShape>OpenHandCursor</cursorShape>
+   </property>
+   <property name="toolTip">
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Applies your selection in QGIS.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
    </property>
    <property name="text">
     <string>Show selection</string>
@@ -127,7 +160,7 @@
    <property name="geometry">
     <rect>
      <x>20</x>
-     <y>350</y>
+     <y>310</y>
      <width>301</width>
      <height>31</height>
     </rect>
@@ -137,13 +170,16 @@
    <property name="geometry">
     <rect>
      <x>330</x>
-     <y>350</y>
+     <y>310</y>
      <width>41</width>
      <height>31</height>
     </rect>
    </property>
    <property name="cursor">
     <cursorShape>OpenHandCursor</cursorShape>
+   </property>
+   <property name="toolTip">
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Browse file.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
    </property>
    <property name="text">
     <string>....</string>
@@ -153,13 +189,16 @@
    <property name="geometry">
     <rect>
      <x>20</x>
-     <y>390</y>
+     <y>350</y>
      <width>351</width>
      <height>41</height>
     </rect>
    </property>
    <property name="cursor">
     <cursorShape>OpenHandCursor</cursorShape>
+   </property>
+   <property name="toolTip">
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This will create a .geojson file.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
    </property>
    <property name="text">
     <string>Export selection to GJSON</string>
@@ -177,34 +216,27 @@
    <property name="cursor">
     <cursorShape>ArrowCursor</cursorShape>
    </property>
+   <property name="toolTip">
+    <string extracomment="Adds a gemeente layer from the Dutch SDI."/>
+   </property>
    <property name="text">
     <string>gemeenten</string>
-   </property>
-  </widget>
-  <widget class="QPushButton" name="pushButton_cancel">
-   <property name="geometry">
-    <rect>
-     <x>150</x>
-     <y>450</y>
-     <width>98</width>
-     <height>27</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Cancel</string>
    </property>
   </widget>
   <widget class="QLabel" name="label_5">
    <property name="geometry">
     <rect>
-     <x>150</x>
+     <x>20</x>
      <y>10</y>
-     <width>191</width>
+     <width>341</width>
      <height>20</height>
     </rect>
    </property>
    <property name="text">
     <string>Add CBS layer :</string>
+   </property>
+   <property name="alignment">
+    <set>Qt::AlignCenter</set>
    </property>
   </widget>
   <widget class="QPushButton" name="pushButton_addWFS_buurten">
@@ -219,8 +251,38 @@
    <property name="cursor">
     <cursorShape>ArrowCursor</cursorShape>
    </property>
+   <property name="toolTip">
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Adds the buurten (neigborhoods) from the Dutch SDI: Nationaal Georegister.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+   </property>
    <property name="text">
     <string>buurten</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="pushButton_refresh">
+   <property name="geometry">
+    <rect>
+     <x>340</x>
+     <y>110</y>
+     <width>31</width>
+     <height>27</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <family>Ubuntu</family>
+     <weight>75</weight>
+     <bold>true</bold>
+     <underline>false</underline>
+    </font>
+   </property>
+   <property name="mouseTracking">
+    <bool>false</bool>
+   </property>
+   <property name="toolTip">
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This will refresh the layers.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+   </property>
+   <property name="text">
+    <string>↺</string>
    </property>
   </widget>
  </widget>
